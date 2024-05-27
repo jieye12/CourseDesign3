@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>美食</h1>
+    <h1>后台主页</h1>
   </div>
 </template>
 <script setup lang="ts">

@@ -7,10 +7,8 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter()
-onMounted(()=>{
-  router.push("/login")
+onMounted(() => {
+  router.push("/")
 })
 </script>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
