@@ -44,7 +44,7 @@ const rules = ref({
     }]
 })
 const log = ()=>{
-    router.push("/home")
+    router.push("/layout")
 }
 // const log = () => {
 //     form.value.validate(async (valid: any) => {

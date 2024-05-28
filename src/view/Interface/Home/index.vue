@@ -40,6 +40,8 @@ const { userLoginState } = store
     height: $nav_height;
     line-height: $nav_height;
     text-align: center;
+    background-color: #434343;
+    color: #ffffff;
 
     .right {
       position: absolute;
@@ -61,17 +63,23 @@ const { userLoginState } = store
           margin-left: 20px;
         }
       }
+
+      .notLogged {
+        a {
+          color: #ffffff;
+        }
+      }
     }
   }
 
   .main {
     background: #f8f8f8;
-    ;
     min-height: calc(100vh - $nav_height);
 
     .center {
-      width: 80%;
+      width: 75%;
       margin: 0 auto;
+      min-height: calc(100vh - $nav_height);
     }
   }
 }

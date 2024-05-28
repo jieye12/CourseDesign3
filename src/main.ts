@@ -10,7 +10,9 @@ import { createPinia } from 'pinia'
 const pinia = createPinia()
 // 请求
 // 
+import gloalComponent from '@/components'
 const app = createApp(App)
 app.use(router)
 app.use(pinia)
+app.use(gloalComponent)
 app.mount('#app')
