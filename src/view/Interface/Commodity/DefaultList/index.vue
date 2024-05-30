@@ -22,8 +22,8 @@
             </div>
             <div class="right">
                 <!-- 个人 -->
-                <el-button @click="goRouter()">前往认证</el-button>
-                <el-button @click="goToStore()">我的店铺</el-button>
+                <img :src="Home" alt="">
+                <div class="title">欢迎来到该平台</div>
             </div>
         </div>
         <!-- 模块展示 -->
@@ -55,6 +55,8 @@ import M3 from '@/assets/images/module/m3.png'
 import M4 from '@/assets/images/module/m4.png'
 import M5 from '@/assets/images/module/m5.png'
 import M6 from '@/assets/images/module/m6.png'
+// 
+import Home from '@/assets/images/home.jpg'
 // 
 import Module from '@/components/module.vue'
 const router = useRouter()
@@ -349,7 +351,14 @@ const goToStore = () => {
         .right {
             width: 20%;
             background-color: #ffffff;
+            text-align: center;
 
+            img {
+                margin: 60px 0 20px 0;
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+            }
         }
     }
 

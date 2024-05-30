@@ -1,3 +1,4 @@
+import { statisticProps } from "element-plus";
 import { createRouter, createWebHistory } from "vue-router";
 // 
 const Login = () => import("@/view/Login/index.vue")
@@ -10,8 +11,12 @@ const StorePage = () => import("@/view/Interface/StorePage/index.vue")
 const OrderInfo = () => import("@/view/Interface/TradePage/OrderInfo/index.vue")
 const TradePage = () => import("@/view/Interface/TradePage/index.vue")
 const Authentication = () => import("@/view/Interface/Authentication/index.vue")
-const HangOut = () => import("@/view/Interface/Authentication/HangOut/index.vue")
 const PersonalCenter = () => import("@/view/Interface/PersonalCenter/index.vue")
+const MyInformation = () => import("@/view/Interface/PersonalCenter/MyInformation/index.vue")
+const MyOrder = () => import("@/view/Interface/PersonalCenter/MyOrder/index.vue")
+const MyStore = () => import("@/view/Interface/PersonalCenter/MyStore/index.vue")
+const HangOut = () => import("@/view/Interface/PersonalCenter/Hangout/index.vue")
+const Stastistics = () => import("@/view/Interface/PersonalCenter/Statistics/index.vue")
 // 
 const Layout = () => import("@/layout/index.vue")
 const Page = () => import("@/view/Background/Page/index.vue")
@@ -32,6 +37,7 @@ const Authority = () => import("@/view/Background/authority/index.vue")
 // 
 const Sales = () => import("@/view/Background/statistics/sales/index.vue")
 const Goods = () => import("@/view/Background/statistics/goods/index.vue")
+const Visualization = () => import("@/view/Background/statistics/visualization/index.vue")
 // 
 const router = createRouter(
     {
@@ -78,21 +84,40 @@ const router = createRouter(
                         path: '/commodity_detail',
                         component: CommodityDetail,
                     },
-                ]
-            },
-            {
-                path: "/personal_center",
-                component: PersonalCenter,
-                children: [
                     {
-                        path: "/authentication",
-                        component: Authentication
-                    }
+                        path: "/personal_center",
+                        component: PersonalCenter,
+                        redirect: "/my_information",
+                        children: [
+                            {
+                                path: "/my_information",
+                                component: MyInformation,
+                            },
+
+                            {
+                                path: "/authentication",
+                                component: Authentication
+                            },
+                            {
+                                path: "/my_order",
+                                component: MyOrder,
+                            },
+                            {
+                                path: "/my_store",
+                                component: MyStore,
+                            },
+                            {
+                                path: "/hang_out",
+                                component: HangOut
+                            },
+                            {
+                                path: "/statistics",
+                                component: Stastistics
+                            }
+
+                        ]
+                    },
                 ]
-            },
-            {
-                path: "/hang_out",
-                component: HangOut
             },
             // 后台管理
             {
@@ -268,6 +293,15 @@ const router = createRouter(
                                     icon: "Goods",
                                 },
                                 component: Goods
+                            },
+                            {
+                                path: "/statistics/visualization",
+                                name: "Visualization",
+                                meta: {
+                                    title: "可视化分析",
+                                    icon: "Flag"
+                                },
+                                component: Visualization,
                             }
                         ]
                     }
@@ -448,6 +482,14 @@ export const asyncRoute = [
                     icon: "List",
                 },
                 component: Goods
+            }, {
+                path: "/statistics/visualization",
+                name: "Visualization",
+                meta: {
+                    title: "可视化分析",
+                    icon: "Flag"
+                },
+                component: Visualization,
             }
         ]
     }

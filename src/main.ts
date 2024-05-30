@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 // 样式
 import "@/style/common.scss"
+// 
+import 'element-plus/theme-chalk/dark/css-vars.css'
 // 路由
 import "@/router/index"
 import router from '@/router/index'

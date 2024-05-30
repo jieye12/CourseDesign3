@@ -8,9 +8,23 @@
           <div class="avatar">
             <img src="../../../assets/images/avatar.jpeg" alt="">
           </div>
-          <div class="nickname">
-            <router-link to="/personal_center">jieye</router-link>
-          </div>
+          <!--  -->
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              {{ "jieye" }}
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="goToPersonalCenter()">个人中心</el-dropdown-item>
+              </el-dropdown-menu>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="logout()">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
         <div class="notLogged" v-else>
           <span>
@@ -29,9 +43,17 @@
 </template>
 <script setup lang="ts">
 // import { ref } from 'vue'
+import { useRouter } from 'vue-router';
 import { useUserStateStore } from '@/store/user';
 const store = useUserStateStore()
+const router = useRouter()
 const { userLoginState } = store
+const goToPersonalCenter = () => {
+  router.push("/personal_center")
+}
+const logout = () => {
+  router.push("/login")
+}
 </script>
 <style lang="scss" scoped>
 .whole {
@@ -45,13 +67,15 @@ const { userLoginState } = store
 
     .right {
       position: absolute;
-      right: 100px;
+      right: 30px;
       top: 0;
 
       .logged {
         display: flex;
 
         .avatar {
+          padding: 5px 0;
+
           img {
             width: 40px;
             height: 40px;
@@ -59,9 +83,24 @@ const { userLoginState } = store
           }
         }
 
-        .nickname {
-          margin-left: 20px;
+        .el-dropdown {
+          margin-left: 2px;
+          padding: 0 20px;
+          border: none;
+          outline: none;
+
+          :deep(.el-tooltip__trigger:focus-visible) {
+            outline: unset;
+          }
+
+          span {
+            display: inline-block;
+            height: 50px;
+            line-height: 50px;
+            color: #ffffff;
+          }
         }
+
       }
 
       .notLogged {
