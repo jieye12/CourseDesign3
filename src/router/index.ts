@@ -2,6 +2,7 @@ import { statisticProps } from "element-plus";
 import { createRouter, createWebHistory } from "vue-router";
 // 
 const Login = () => import("@/view/Login/index.vue")
+const Register = () => import("@/view/Register/index.vue")
 const Home = () => import("@/view/Interface/Home/index.vue")
 const Commodity = () => import("@/view/Interface/Commodity/index.vue")
 const DefaultList = () => import("@/view/Interface/Commodity/DefaultList/index.vue")
@@ -10,6 +11,7 @@ const CommodityDetail = () => import("@/view/Interface/Commodity/CommodityDetail
 const StorePage = () => import("@/view/Interface/StorePage/index.vue")
 const OrderInfo = () => import("@/view/Interface/TradePage/OrderInfo/index.vue")
 const TradePage = () => import("@/view/Interface/TradePage/index.vue")
+// const Authentication = () => import("@/view/Interface/Authentication/index.vue")
 const Authentication = () => import("@/view/Interface/Authentication/index.vue")
 const PersonalCenter = () => import("@/view/Interface/PersonalCenter/index.vue")
 const MyInformation = () => import("@/view/Interface/PersonalCenter/MyInformation/index.vue")
@@ -47,6 +49,10 @@ const router = createRouter(
             {
                 path: "/login",
                 component: Login,
+            },
+            {
+                path: "/register",
+                component: Register,
             },
             {
                 path: "/home",

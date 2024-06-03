@@ -9,7 +9,8 @@
                     <el-input placeholder="请输入密码" v-model="formData.password"></el-input>
                 </el-form-item>
                 <el-form-item class="btn">
-                    <el-button @click="log()" type="primary">登录</el-button>
+                    <el-button @click="register()" class="btn1">前往注册</el-button>
+                    <el-button @click="log()" type="primary" class="btn2">登录</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -43,8 +44,11 @@ const rules = ref({
         trigger: 'blur',
     }]
 })
-const log = ()=>{
+const log = () => {
     router.push("/layout")
+}
+const register = () => {
+    router.push("/register");
 }
 // const log = () => {
 //     form.value.validate(async (valid: any) => {
@@ -87,9 +91,10 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .all {
-    width:100%;
-    min-height:100vh;
+    width: 100%;
+    min-height: 100vh;
     background: url(../../assets/images/bg.png);
+
     .form {
         position: absolute;
         width: 400px;
@@ -131,12 +136,20 @@ onMounted(() => {
 
             .btn {
                 display: flex;
+                // justify-content: end;
                 justify-content: flex-end;
 
                 .el-button {
-                    margin-left: 260px;
+                    margin: 0 30px 0 20px;
                     display: inline-block;
-                    // color: #00d0ff;
+                }
+
+                .btn1 {
+                    margin: 0 0 0 170px;
+                }
+
+                .btn2 {
+                    margin: 0 0 0 10px;
                 }
             }
         }
