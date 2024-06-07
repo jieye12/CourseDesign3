@@ -8,7 +8,6 @@
         <el-sub-menu class="nav">
           <template #title>我的店铺</template>
           <el-menu-item index="/my_store">商品列表</el-menu-item>
-          <el-menu-item index="/hang_out">新增商品</el-menu-item>
           <el-menu-item index="/statistics">数据统计</el-menu-item>
         </el-sub-menu>
       </el-menu>

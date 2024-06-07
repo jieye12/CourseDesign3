@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-const router = useRouter()
+let router = useRouter()
 const goRouter = () => {
     router.push("/commodity_list")
 }

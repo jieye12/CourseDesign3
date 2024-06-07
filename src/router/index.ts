@@ -1,4 +1,3 @@
-import { statisticProps } from "element-plus";
 import { createRouter, createWebHistory } from "vue-router";
 // 
 const Login = () => import("@/view/Login/index.vue")
@@ -11,8 +10,10 @@ const CommodityDetail = () => import("@/view/Interface/Commodity/CommodityDetail
 const StorePage = () => import("@/view/Interface/StorePage/index.vue")
 const OrderInfo = () => import("@/view/Interface/TradePage/OrderInfo/index.vue")
 const TradePage = () => import("@/view/Interface/TradePage/index.vue")
+const CancelOrder = () => import("@/view/Interface/TradePage/CancelOrder/index.vue")
 // const Authentication = () => import("@/view/Interface/Authentication/index.vue")
 const Authentication = () => import("@/view/Interface/Authentication/index.vue")
+const ApplyStore = () => import("@/view/Interface/PersonalCenter/ApplyStore/index.vue")
 const PersonalCenter = () => import("@/view/Interface/PersonalCenter/index.vue")
 const MyInformation = () => import("@/view/Interface/PersonalCenter/MyInformation/index.vue")
 const MyOrder = () => import("@/view/Interface/PersonalCenter/MyOrder/index.vue")
@@ -87,6 +88,10 @@ const router = createRouter(
                         component: TradePage
                     },
                     {
+                        path: "/cancel_order",
+                        component: CancelOrder,
+                    },
+                    {
                         path: '/commodity_detail',
                         component: CommodityDetail,
                     },
@@ -103,6 +108,10 @@ const router = createRouter(
                             {
                                 path: "/authentication",
                                 component: Authentication
+                            },
+                            {
+                                path: "/apply_store",
+                                component: ApplyStore,
                             },
                             {
                                 path: "/my_order",
@@ -372,24 +381,7 @@ export const asyncRoute = [
         component: Layout,
         redirect: "/store/iventory",
         children: [
-            {
-                path: "/store/iventory",
-                name: "Iventory",
-                meta: {
-                    title: "库存管理",
-                    icon: "Ticket",
-                },
-                component: Iventory,
-            },
-            {
-                path: "/store/credit",
-                name: "Credit",
-                meta: {
-                    title: "信誉管理",
-                    icon: "Management",
-                },
-                component: Credit
-            }
+
         ]
     },
     {
@@ -403,6 +395,15 @@ export const asyncRoute = [
         redirect: "/commodity/category",
         children: [
             {
+                path: "/store/iventory",
+                name: "Iventory",
+                meta: {
+                    title: "库存管理",
+                    icon: "Ticket",
+                },
+                component: Iventory,
+            },
+            {
                 path: "/commodity/category",
                 name: "Category",
                 meta: {
@@ -411,15 +412,15 @@ export const asyncRoute = [
                 },
                 component: Category,
             },
-            {
-                path: "/commodity/state",
-                name: "State",
-                meta: {
-                    title: "状态管理",
-                    icon: "BellFilled",
-                },
-                component: State,
-            }
+            // {
+            //     path: "/commodity/state",
+            //     name: "State",
+            //     meta: {
+            //         title: "状态管理",
+            //         icon: "BellFilled",
+            //     },
+            //     component: State,
+            // }
         ]
     },
     {
@@ -441,25 +442,7 @@ export const asyncRoute = [
                 },
                 component: Order,
             },
-            {
-                path: "/trade/logistics",
-                name: "Logistics",
-                meta: {
-                    title: "物流管理",
-                    icon: "ElemeFilled",
-                },
-                component: Logistics
-            }
         ]
-    },
-    {
-        path: "/authority",
-        name: "Authority",
-        meta: {
-            title: "权限管理",
-            icon: "Compass",
-        },
-        component: Authority,
     },
     {
         path: "/statistics",
@@ -479,23 +462,6 @@ export const asyncRoute = [
                     icon: "TrendCharts",
                 },
                 component: Sales
-            },
-            {
-                path: "/statistics/goods",
-                name: "Goods",
-                meta: {
-                    title: "商品统计",
-                    icon: "List",
-                },
-                component: Goods
-            }, {
-                path: "/statistics/visualization",
-                name: "Visualization",
-                meta: {
-                    title: "可视化分析",
-                    icon: "Flag"
-                },
-                component: Visualization,
             }
         ]
     }

@@ -4,15 +4,21 @@
             已认证
         </div>
         <div class="notAuthenticated" v-else>
-            <el-form style="width: 80%;" :model="trademarkParams" :rules="rules" ref="formRef">
-                <el-form-item label="真实姓名" label-width="100px" prop="name">
-                    <el-input placeholder="请您输入真实姓名" v-model="form.name"></el-input>
+            <el-form style="width: 80%;" :model="form" :rules="rules" ref="formRef">
+                <el-form-item label="真实姓名" label-width="100px" prop="realName">
+                    <el-input placeholder="请您输入真实姓名" v-model="form.realName"></el-input>
                 </el-form-item>
-                <el-form-item label="身份证号" label-width="100px" prop="idNumber">
-                    <el-input placeholder="请您输入身份证号" v-model="form.idNumber"></el-input>
+                <el-form-item label="证件类型" label-width="100px" prop="idType">
+                    <el-input placeholder="请您输入证件类型" v-model="form.idType" disabled value="居民身份证"></el-input>
                 </el-form-item>
-                <el-form-item label="账号密码" label-width="100px" prop="password">
-                    <el-input placeholder="请您输入账号密码" v-model="form.password"></el-input>
+                <el-form-item label="身份证号" label-width="100px" prop="idCard">
+                    <el-input placeholder="请您输入身份证号" v-model="form.idCard"></el-input>
+                </el-form-item>
+                <el-form-item label="地址" label-width="100px" prop="address">
+                    <el-input placeholder="请您输入身份证号" v-model="form.address"></el-input>
+                </el-form-item>
+                <el-form-item label="区域" label-width="100px" prop="region">
+                    <el-input placeholder="请您输入身份证号" v-model="form.region"></el-input>
                 </el-form-item>
                 <el-form-item label="身份证照片" label-width="100px" prop="imgUrl">
                     <!-- upload组件属性:action图片上传路径书写/api,代理服务器不发送这次post请求  -->
@@ -27,66 +33,80 @@
                 </el-form-item>
             </el-form>
             <div class="btn">
-                <el-button type=primary>提交认证</el-button>
+                <el-button type=primary @click="submitForm()">提交认证</el-button>
             </div>
         </div>
 
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
-
+import { reqAuthenticate } from '@/api/user/index.ts'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const isAuthenticated = ref(false);
 const authenticatedInfo = ref({
     idNumber: '',
     // other authenticated information fields
 });
 const form = ref({
-    name: "",
-    idNumber: "",
-    password: "",
-    imgUrl: ""
+    realName: "杜成友",
+    idType: 1,
+    idCard: "123456789",
+    address: "陕西省西安市长安区",
+    region: "中国大陆",
 });
 let formRef = ref()
 const fileList = ref([]);
 const submitting = ref(false);
 
 const rules = {
-    name: [
+    realName: [
         { required: true, message: '请输入真实姓名', trigger: 'blur' },
         // other custom validation rules
     ],
-    idNumber: [
+    idType: [
         { required: true, message: '请输入身份证号', trigger: 'blur' },
         // other custom validation rules
     ],
-    password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
+    idCard: [
+        { required: true, message: '请输入身份证号', trigger: 'blur' },
         // other custom validation rules
     ],
-    imgUrl: [
-        {
-            required: true, message: "请上传身份证图片"
-        }
-    ]
+    address: [
+        { required: true, message: '请输入地址', trigger: 'blur' },
+        // other custom validation rules
+    ],
+    region: [
+        { required: true, message: '请输入区域', trigger: 'blur' },
+        // other custom validation rules
+    ],
 };
 
 const submitForm = () => {
-    const { value: formValue } = form;
-    const isValid = validateForm();
-    if (isValid) {
-        submitting.value = true;
-        // simulate authentication submission
-        setTimeout(() => {
-            // assuming authentication is successful, update authentication status and information
-            isAuthenticated.value = true;
-            authenticatedInfo.value.idNumber = formValue.idNumber;
-            // other actions after successful authentication
-            submitting.value = false;
-        }, 1500); // simulate submission delay
-    }
+    formRef.value.validate(async (valid: any) => {
+        if (valid) {
+            console.log(form.value);
+            const res = await reqAuthenticate(form.value)
+            console.log(res);
+            if (res.code === '0') {
+                router.push("/apply_store")
+                ElNotification({
+                    type: 'success',
+                    message: '请申请个人店铺',
+                    title: "身份认证完成"
+                });
+            }
+            else {
+                ElNotification({
+                    type: 'error',
+                    message: "身份认证失败"
+                })
+            }
+        }
+    })
 };
 
 const validateForm = () => {

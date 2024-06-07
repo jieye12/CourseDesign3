@@ -22,6 +22,7 @@
             </div>
             <div class="right">
                 <!-- 个人 -->
+                <button @click="back()">前往后台</button>
                 <img :src="Home" alt="">
                 <div class="title">欢迎来到该平台</div>
             </div>
@@ -297,6 +298,9 @@ const goRouter = () => {
 }
 const goToStore = () => {
     router.push("/store_page")
+}
+const back = () => {
+    router.push("/layout")
 }
 </script>
 <style lang="scss" scoped>

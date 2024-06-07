@@ -563,7 +563,9 @@ const initLine = () => {
 
         legend: {
             data: ['今日投诉曲线', '平均线', '目标线'],
-            x: 'left'
+            x: 'right',
+            top: "20px",
+            bottom: "20px"
         },
 
         xAxis: {

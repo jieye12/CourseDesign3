@@ -19,14 +19,16 @@
       <el-table-column type="selection" align="center"></el-table-column>
       <el-table-column label="#" align="center" type="index"></el-table-column>
       <el-table-column label="ID" align="center" prop="id"></el-table-column>
-      <el-table-column label="用户名字" align="center" prop="username" show-overflow-tooltip></el-table-column>
-      <el-table-column label="用户名称" align="center" prop="name" show-overflow-tooltip></el-table-column>
-      <el-table-column label="用户角色" align="center" prop="roleName" show-overflow-tooltip></el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" show-overflow-tooltip></el-table-column>
-      <el-table-column label="操作" width="300px" align="center">
+      <el-table-column label="用户名字" align="center" prop="realName" show-overflow-tooltip></el-table-column>
+      <el-table-column label="用户名称" align="center" prop="userName" show-overflow-tooltip></el-table-column>
+      <el-table-column label="手机号" align="center" prop="phone" show-overflow-tooltip></el-table-column>
+      <el-table-column label="电子邮箱" align="center" prop="mail" show-overflow-tooltip></el-table-column>
+      <el-table-column label="店铺名称" align="center" prop="storeName" show-overflow-tooltip></el-table-column>
+      <el-table-column label="店铺地址" align="center" prop="storeAddress" show-overflow-tooltip></el-table-column>
+      <el-table-column label="店铺描述" align="center" prop="storeDescription" show-overflow-tooltip></el-table-column>
+      <el-table-column label="相关服务" align="center" prop="returnPolicy" show-overflow-tooltip></el-table-column>
+      <el-table-column label="操作" width="200px" align="center">
         <template #="{ row, $index }">
-          <el-button type="primary" size="small" icon="User" @click="setRole(row)">分配角色</el-button>
           <el-button type="primary" size="small" icon="Edit" @click="updateUser(row)">编辑</el-button>
           <el-popconfirm :title="`你确定要删除${row.username}?`" width="260px" @confirm="deleteUser(row.id)">
             <template #reference>
@@ -50,14 +52,29 @@
     <!-- 身体部分 -->
     <template #default>
       <el-form :model="userParams" :rules="rules" ref="formRef">
-        <el-form-item label="用户姓名" prop="username">
-          <el-input placeholder="请您输入用户姓名" v-model="userParams.username"></el-input>
+        <el-form-item label="用户姓名" prop="realName">
+          <el-input placeholder="请您输入用户姓名" v-model="userParams.realName"></el-input>
         </el-form-item>
-        <el-form-item label="用户昵称" prop="name">
-          <el-input placeholder="请您输入用户昵称" v-model="userParams.name"></el-input>
+        <el-form-item label="用户昵称" prop="username">
+          <el-input placeholder="请您输入用户昵称" v-model="userParams.username"></el-input>
         </el-form-item>
-        <el-form-item label="用户密码" prop="password" v-if="!userParams.id">
-          <el-input placeholder="请您输入用户密码" v-model="userParams.password"></el-input>
+        <el-form-item label="用户手机号" prop="phone">
+          <el-input placeholder="请您输入用户手机号" v-model="userParams.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="用户邮箱" prop="mail">
+          <el-input placeholder="请您输入用户邮箱" v-model="userParams.mail"></el-input>
+        </el-form-item>
+        <el-form-item label="用户店铺名称" prop="storeName">
+          <el-input placeholder="请您输入店铺名称" v-model="userParams.storeName"></el-input>
+        </el-form-item>
+        <el-form-item label="店铺地址" prop="storeAddress">
+          <el-input placeholder="请您输入店铺地址" v-model="userParams.storeAddress"></el-input>
+        </el-form-item>
+        <el-form-item label="店铺描述" prop="storeDescription">
+          <el-input placeholder="请您输入店铺描述" v-model="userParams.storeDescription"></el-input>
+        </el-form-item>
+        <el-form-item label="相关服务" prop="returnPolify">
+          <el-input placeholder="请您输入相关服务" v-model="userParams.returnPolicy"></el-input>
         </el-form-item>
       </el-form>
     </template>
@@ -108,7 +125,93 @@ let pageSize = ref<number>(5);
 //用户总个数
 let total = ref<number>(0);
 //存储全部用户的数组
-let userArr = ref<Records>([]);
+let userArr = ref(
+  [
+    {
+      id: 2,
+      realName: "张明",
+      gender: "男",
+      userName: "techworld",
+      phone: "13899887766",
+      mail: "techworld@store.com",
+      storeName: "科技世界数码专营店",
+      storeType: "科技产品",
+      storeAddress: "北京市朝阳区建国路88号",
+      storeDescription: "提供各种新颖科技产品，涵盖智能家居、智能穿戴等领域。",
+      returnPolicy: "商品支持15天无理由退换货，退货需保持产品完好，扣除10%的服务费用。"
+    }, {
+      id: 3,
+      realName: "王芳",
+      gender: "女",
+      userName: "gadgetqueen",
+      phone: "13987654321",
+      mail: "gadgetqueen@store.com",
+      storeName: "时尚潮品数码店",
+      storeType: "时尚潮品",
+      storeAddress: "广州市天河区珠江新城花城大道1号",
+      storeDescription: "提供时尚潮流数码产品，包括配件、装饰品等。",
+      returnPolicy: "商品支持30天退货，但必须保持完好无损，不影响二次销售。"
+    },
+    {
+      id: 4,
+      realName: "刘强",
+      gender: "男",
+      userName: "electrozone",
+      phone: "13765432109",
+      mail: "electrozone@store.com",
+      storeName: "电子之家",
+      storeType: "家用电器",
+      storeAddress: "深圳市南山区科技园中一路1号",
+      storeDescription: "专业销售家用电器，涵盖厨房电器、清洁电器等。",
+      returnPolicy: "商品质量问题支持7天无理由退换货，其他情况不支持退货。"
+    },
+    {
+      id: 5,
+      realName: "陈慧",
+      gender: "女",
+      userName: "beautytech",
+      phone: "13612345678",
+      mail: "beautytech@store.com",
+      storeName: "美容科技专卖店",
+      storeType: "美容仪器",
+      storeAddress: "上海市静安区南京西路888号",
+      storeDescription: "销售美容仪器，助力美容护肤。",
+      returnPolicy: "商品质量问题支持7天无理由退换货，其他情况不予退货。"
+    },
+    {
+      id: 6,
+      realName: "赵阳",
+      gender: "男",
+      userName: "smartliving",
+      phone: "13598765432",
+      mail: "smartliving@store.com",
+      storeName: "智能生活馆",
+      storeType: "智能家居",
+      storeAddress: "杭州市西湖区西溪路168号",
+      storeDescription: "提供智能家居产品，打造智能生活体验。",
+      returnPolicy: "商品质量问题支持15天无理由退换货，其他情况不予退货。"
+    },
+    {
+      id: 7,
+      realName: "周伟",
+      gender: "男",
+      userName: "gamerparadise",
+      phone: "13987654321",
+      mail: "gamerparadise@store.com",
+      storeName: "游戏天堂",
+      storeType: "游戏设备",
+      storeAddress: "成都市武侯区锦绣路123号",
+      storeDescription: "提供游戏设备、周边配件等。",
+      returnPolicy: "商品质量问题支持10天无理由退换货，其他情况不支持退货。"
+    }
+
+
+
+
+
+
+  ]
+);
 //定义响应式数据控制抽屉的显示与隐藏
 let drawer = ref<boolean>(false);
 //控制分配角色抽屉显示与隐藏
@@ -119,9 +222,16 @@ let allRole = ref<AllRole>([]);
 let userRole = ref<AllRole>([]);
 //收集用户信息的响应式数据
 let userParams = reactive<User>({
-  username: '',
-  name: '',
-  password: ''
+  userName: '',
+  realName: '',
+  gender: "",
+  phone: "",
+  mail: "",
+  storeName: "",
+  storeType: "",
+  storeAddress: "",
+  storeDescription: "",
+  returnPolicy: ""
 });
 //准备一个数组存储批量删除的用户的ID
 let selectIdArr = ref<User[]>([]);

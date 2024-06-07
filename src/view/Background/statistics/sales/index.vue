@@ -30,26 +30,15 @@
       </div>
     </div>
     <div class="main">
-      <el-table @selection-change="selectChange" style="margin: 10px 0px;" border :data="userArr">
+      <el-table @selection-change="selectChange" style="margin: 10px 0px;" border :data="data">
         <el-table-column type="selection" align="center"></el-table-column>
         <el-table-column label="#" align="center" type="index"></el-table-column>
-        <el-table-column label="ID" align="center" prop="id"></el-table-column>
+        <el-table-column label="订单ID" align="center" prop="id"></el-table-column>
         <el-table-column label="用户名字" align="center" prop="username" show-overflow-tooltip></el-table-column>
-        <el-table-column label="用户名称" align="center" prop="name" show-overflow-tooltip></el-table-column>
-        <el-table-column label="用户角色" align="center" prop="roleName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="店铺名称" align="center" prop="storeName" show-overflow-tooltip></el-table-column>
+        <el-table-column label="交易金额" align="center" prop="amount" show-overflow-tooltip></el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="更新时间" align="center" prop="updateTime" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作" width="300px" align="center">
-          <template #="{ row, $index }">
-            <el-button type="primary" size="small" icon="User" @click="setRole(row)">分配角色</el-button>
-            <el-button type="primary" size="small" icon="Edit" @click="updateUser(row)">编辑</el-button>
-            <el-popconfirm :title="`你确定要删除${row.username}?`" width="260px" @confirm="deleteUser(row.id)">
-              <template #reference>
-                <el-button type="primary" size="small" icon="Delete">删除</el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
+        <el-table-column label="交易状态" align="center" prop="status" show-overflow-tooltip></el-table-column>
       </el-table>
     </div>
   </el-card>
@@ -57,6 +46,96 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 const radio1 = ref(0)
+const data = ref([
+  {
+    id: "19083784238899",
+    username: "jieye",
+    storeName: "小李的小店",
+    amount: "1200",
+    createTime: "2024-06-02",
+    status: "已完成"
+  },
+  {
+    id: "19083784238908",
+    username: "william_wilson",
+    storeName: "Home Appliances",
+    amount: "2000",
+    createTime: "2024-06-11",
+    status: "已完成"
+  },
+  {
+    id: "19083784238907",
+    username: "olivia_brown",
+    storeName: "Fashion Trends",
+    amount: "3000",
+    createTime: "2024-06-10",
+    status: "已完成"
+  },
+  {
+    id: "19083784238899",
+    username: "jieye",
+    storeName: "小李的小店",
+    amount: "1200",
+    createTime: "2024-06-02",
+    status: "已完成"
+  },
+  {
+    id: "19083784238900",
+    username: "john_doe",
+    storeName: "Fashion Hub",
+    amount: "800",
+    createTime: "2024-06-03",
+    status: "已完成"
+  },
+  {
+    id: "19083784238901",
+    username: "emma_smith",
+    storeName: "Tech Solutions",
+    amount: "3500",
+    createTime: "2024-06-04",
+    status: "已完成"
+  },
+  {
+    id: "19083784238902",
+    username: "alex_jones",
+    storeName: "Garden Paradise",
+    amount: "250",
+    createTime: "2024-06-05",
+    status: "已完成"
+  },
+  {
+    id: "19083784238903",
+    username: "sarah_miller",
+    storeName: "Beauty Emporium",
+    amount: "1800",
+    createTime: "2024-06-06",
+    status: "已完成"
+  },
+  {
+    id: "19083784238904",
+    username: "james_williams",
+    storeName: "Home Essentials",
+    amount: "500",
+    createTime: "2024-06-06",
+    status: "已完成"
+  },
+  {
+    id: "19083784238906",
+    username: "michael_thomas",
+    storeName: "Sports Zone",
+    amount: "120",
+    createTime: "2024-06-06",
+    status: "已完成"
+  }
+
+
+
+
+
+
+
+
+])
 </script>
 <style lang="scss" scoped>
 .whole {

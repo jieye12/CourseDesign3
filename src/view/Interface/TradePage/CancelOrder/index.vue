@@ -1,30 +1,6 @@
 <template>
     <el-card class="whole">
-        <h1>核对订单信息</h1>
-        <!-- 地址部分 -->
-        <div class="person">
-            <div class="title">收货人信息</div>
-            <el-form :model="formData" ref="form" :rules="rules">
-                <el-form-item label="姓名 :" prop="username" label-width="100px">
-                    <el-input placeholder="请输入姓名" v-model="formData.username"></el-input>
-                </el-form-item>
-                <el-form-item label="地址 :" prop="address" label-width="100px">
-                    <el-input placeholder="请输入收货地址" v-model="formData.address"></el-input>
-                </el-form-item>
-                <el-form-item label="联系电话 :" prop="telphone" label-width="100px">
-                    <el-input placeholder="请输入联系电话" v-model="formData.telphone"></el-input>
-                </el-form-item>
-            </el-form>
-        </div>
-        <!-- 支付方式 -->
-        <div class="way">
-            <div class="title">选择支付方式</div>
-            <div class="list">
-                <el-button type="info" disabled>货到付款</el-button>
-                <el-button type="success">在线支付</el-button>
-            </div>
-        </div>
-        <!-- 商品核对 -->
+        <p>订单号：{{ orderInfo.orderSn }}</p>
         <div class="goods">
             <div class="title">商品信息核对</div>
             <div class="content">
@@ -55,47 +31,26 @@
                 </div>
             </div>
         </div>
-        <!-- 前往支付 -->
-        <div class="btn">
-            <el-button type="danger" @click="createOrder()">生成订单</el-button>
-        </div>
+        <!-- <p>订单金额：{{ orderInfo.userDetails[0].amount }}</p> -->
+        <el-button type="danger" @click="cancelOrder">取消订单</el-button>
+        <el-button type="primary" @click="goToPayment">前往支付</el-button>
+        <el-dialog v-model="dialogFormVisible" :title="支付">
+            <img :src="Payment" alt="">
+        </el-dialog>
     </el-card>
 </template>
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+import { useOrderStore } from '@/store/order';
+import { reqQueryOrder, reqCancelOrder } from '@/api/order/index'
 import { useRouter } from 'vue-router'
-import { reqCreateOrder } from '@/api/order/index'
 import D1 from '@/assets/images/digit/d1.jpg'
-import { useCommodityStore } from '@/store/commodity';
-import { useOrderStore } from '@/store/order'
-const commodityStore = useCommodityStore()
-const orderStore = useOrderStore()
-const { saveCommodity } = commodityStore
-const { saveOrder } = orderStore
-const formData = ref({
-    username: '杜成友',
-    address: '陕西省西安市长安区西安邮电大学长安校区',
-    telphone: '13525164584',
-})
+import Payment from '@/assets/images/payment.jpg'
 const router = useRouter()
-const form = ref()
-const rules = ref({
-    username: [{
-        required: true,
-        message: '请输入收货人姓名',
-        trigger: 'blur',
-    }],
-    address: [{
-        required: true,
-        message: "请输入收货地址",
-        trigger: 'blur',
-    }],
-    telphone: [{
-        required: true,
-        message: "请输入联系电话",
-        trigger: 'blur',
-    }],
-})
+const orderStore = useOrderStore()
+const { saveOrder } = orderStore
+const orderInfo = ref({})
 const info = ref({
     person: {
         name: "张三",
@@ -111,60 +66,49 @@ const info = ref({
         imgUrl: D1,
     }
 })
+const dialogFormVisible = ref(false)
 let id
-let price
-const createOrder = async () => {
-    id = commodityStore.getCommodityId
-    price = commodityStore.getCommodityPrice
+onMounted(async () => {
+    id = orderStore.getOrderId
+    let res1 = await reqQueryOrder(id)
+    console.log(res1);
+    orderInfo.value = res1.data;
+})
+const cancelOrder = async () => {
     let data = ref({
-        username: formData.value.username,
-        source: "",
-        orderTime: "2024-06-04",
-        orderItems: [{
-            productId: id,
-            phone: formData.value.telphone,
-            address: formData.value.address,
-            amount: price,
-        }]
+        orderSn: id
     })
-    const res = await reqCreateOrder(data.value)
+    const res = await reqCancelOrder(data.value)
     console.log(res);
-    if (res.code == 0) {
-        saveOrder(res.data)
-        router.push("/cancel_order")
+    if (res.code === '0') {
+        router.push("/my_order")
+        ElNotification({
+            type: 'success',
+            message: '欢迎',
+            title: "登录成功"
+        });
     }
+    else {
+        ElNotification({
+            type: 'error',
+            message: "登录失败"
+        })
+    }
+
+}
+const goToPayment = () => {
+    console.log("前往支付");
+    dialogFormVisible.value = true;
 }
 </script>
-<style lang="scss" scoped>
+
+<style scoped lang="scss">
+/* 样式可以根据需求自行调整 */
 .whole {
-    margin: 20px 0;
+    margin: 20px auto;
     border-radius: 20px;
-
-    h1 {
-        text-align: center;
-    }
-
-    .person {
-        .title {
-            font-weight: 700;
-            margin: 10px 0;
-        }
-
-        .el-form {
-            font-size: 12px;
-        }
-    }
-
-    .way {
-        .title {
-            font-weight: 700;
-            margin: 10px 0;
-        }
-
-        .list {
-            padding: 10px 40px;
-        }
-    }
+    min-height: 200px;
+    text-align: center;
 
     .goods {
         .title {
@@ -225,10 +169,9 @@ const createOrder = async () => {
             }
         }
     }
+}
 
-    .btn {
-        text-align: right;
-        margin: 30px;
-    }
+img {
+    width: 50%;
 }
 </style>

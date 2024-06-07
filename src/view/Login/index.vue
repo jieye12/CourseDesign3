@@ -2,15 +2,15 @@
     <div class="all">
         <div class="form">
             <el-form :model="formData" ref="form" :rules="rules">
-                <el-form-item label="账号 :" prop="username">
-                    <el-input placeholder="请输入账号" v-model="formData.username"></el-input>
+                <el-form-item label="账号 :" prop="usernameOrMailOrPhone">
+                    <el-input placeholder="请输入账号" v-model="formData.usernameOrMailOrPhone"></el-input>
                 </el-form-item>
                 <el-form-item label="密码 :" prop="password">
                     <el-input placeholder="请输入密码" v-model="formData.password"></el-input>
                 </el-form-item>
                 <el-form-item class="btn">
                     <el-button @click="register()" class="btn1">前往注册</el-button>
-                    <el-button @click="log()" type="primary" class="btn2">登录</el-button>
+                    <el-button @click="login()" type="primary" class="btn2">登录</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -19,23 +19,23 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-// import { useLoginStateStore } from '@/store';
+import { useUserStateStore } from '@/store/user';
 import { useRouter } from 'vue-router'
-// import { reqLogin } from '@/api/login/index'
-// import { ElNotification } from 'element-plus';
+import { reqLogin } from '@/api/login/index'
+import { ElNotification } from 'element-plus';
 const router = useRouter()
-// const login = useLoginStateStore()
-// const { logIn } = login
+const loginStore = useUserStateStore()
+const { userLogin } = loginStore
 // 
 const formData = ref({
-    username: '',
-    password: ''
+    usernameOrMailOrPhone: 'jieye',
+    password: '123456'
 })
 const form = ref()
 const rules = ref({
-    username: [{
+    usernameOrMailOrPhone: [{
         required: true,
-        message: '请输入密码',
+        message: '请输入账号',
         trigger: 'blur',
     }],
     password: [{
@@ -44,48 +44,44 @@ const rules = ref({
         trigger: 'blur',
     }]
 })
-const log = () => {
-    router.push("/layout")
-}
+// const login = () => {
+//     router.push("/layout")
+// }
 const register = () => {
     router.push("/register");
 }
-// const log = () => {
-//     form.value.validate(async (valid: any) => {
-//         if (valid) {
-//             const res = await reqLogin(formData.value)
-//             if (res.code === '0') {
-//                 logIn();
-//                 localStorage.setItem('token', res.data.accessToken);
-//                 localStorage.setItem('userId', res.data.userId);
-//                 const path = String(router.currentRoute.value.query.from)
-//                 if (path != 'undefined') {
-//                     router.push(path)
-//                 }
-//                 else {
-//                     router.push("/attractions")
-//                 }
-//                 ElNotification({
-//                     type: 'success',
-//                     message: '欢迎',
-//                     title: "登录成功"
-//                 });
-//             }
-//             else {
-//                 ElNotification({
-//                     type: 'error',
-//                     message: "登录失败"
-//                 })
-//             }
+const login = () => {
+    form.value.validate(async (valid: any) => {
+        if (valid) {
+            console.log(formData.value);
+            const res = await reqLogin(formData.value)
+            console.log(res);
+            if (res.code === '0') {
+                userLogin();
+                localStorage.setItem('token', res.data.accessToken);
+                localStorage.setItem('userId', res.data.userId);
+                localStorage.setItem('username', res.data.username)
+                router.push("/home")
+                ElNotification({
+                    type: 'success',
+                    message: '欢迎',
+                    title: "登录成功"
+                });
+            }
+            else {
+                ElNotification({
+                    type: 'error',
+                    message: "登录失败"
+                })
+            }
+        }
+    })
 
-//         }
-//     })
-
-// }
+}
 
 
 onMounted(() => {
-    // console.log(route.meta.nav);
+
 })
 </script>
 

@@ -19,14 +19,14 @@
       <el-table-column type="selection" align="center"></el-table-column>
       <el-table-column label="#" align="center" type="index"></el-table-column>
       <el-table-column label="ID" align="center" prop="id"></el-table-column>
-      <el-table-column label="用户名字" align="center" prop="username" show-overflow-tooltip></el-table-column>
-      <el-table-column label="用户名称" align="center" prop="name" show-overflow-tooltip></el-table-column>
-      <el-table-column label="用户角色" align="center" prop="roleName" show-overflow-tooltip></el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" show-overflow-tooltip></el-table-column>
+      <el-table-column label="用户名字" align="center" prop="realName" show-overflow-tooltip></el-table-column>
+      <el-table-column label="用户名称" align="center" prop="userName" show-overflow-tooltip></el-table-column>
+      <el-table-column label="性别" align="center" prop="gender" show-overflow-tooltip></el-table-column>
+      <el-table-column label="手机号" align="center" prop="phone" show-overflow-tooltip></el-table-column>
+      <el-table-column label="电子邮箱" align="center" prop="mail" show-overflow-tooltip></el-table-column>
       <el-table-column label="操作" width="300px" align="center">
         <template #="{ row, $index }">
-          <el-button type="primary" size="small" icon="User" @click="setRole(row)">分配角色</el-button>
+          <el-button type="primary" size="small" icon="User" @click="setRole(row)">设为卖家</el-button>
           <el-button type="primary" size="small" icon="Edit" @click="updateUser(row)">编辑</el-button>
           <el-popconfirm :title="`你确定要删除${row.username}?`" width="260px" @confirm="deleteUser(row.id)">
             <template #reference>
@@ -51,13 +51,19 @@
     <template #default>
       <el-form :model="userParams" :rules="rules" ref="formRef">
         <el-form-item label="用户姓名" prop="username">
-          <el-input placeholder="请您输入用户姓名" v-model="userParams.username"></el-input>
+          <el-input placeholder="请您输入用户姓名" v-model="userParams.realName"></el-input>
         </el-form-item>
         <el-form-item label="用户昵称" prop="name">
-          <el-input placeholder="请您输入用户昵称" v-model="userParams.name"></el-input>
+          <el-input placeholder="请您输入用户昵称" v-model="userParams.userName"></el-input>
         </el-form-item>
-        <el-form-item label="用户密码" prop="password" v-if="!userParams.id">
-          <el-input placeholder="请您输入用户密码" v-model="userParams.password"></el-input>
+        <el-form-item label="用户性别" prop="name">
+          <el-input placeholder="请您输入用户性别" v-model="userParams.gender"></el-input>
+        </el-form-item>
+        <el-form-item label="用户手机号" prop="name">
+          <el-input placeholder="请您输入用户手机号" v-model="userParams.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="用户邮箱" prop="name">
+          <el-input placeholder="请您输入用户" v-model="userParams.mail"></el-input>
         </el-form-item>
       </el-form>
     </template>
@@ -104,11 +110,94 @@ import { ElMessage } from 'element-plus';
 //默认页码
 let pageNo = ref<number>(1);
 //一页展示几条数据
-let pageSize = ref<number>(5);
+let pageSize = ref<number>(10);
 //用户总个数
 let total = ref<number>(0);
 //存储全部用户的数组
-let userArr = ref<Records>([]);
+let userArr = ref(
+  [
+    {
+      id: 1,
+      realName: "杜成友",
+      gender: "男",
+      userName: "jieye",
+      phone: "13525164584",
+      mail: "3548671931@qq.com",
+    },
+    {
+      id: 2,
+      realName: "张美丽",
+      gender: "女",
+      userName: "zhangmeili",
+      phone: "13987654321",
+      mail: "zhangmeili@example.com",
+    },
+    {
+      id: 3,
+      realName: "刘华",
+      gender: "男",
+      userName: "liuhua123",
+      phone: "13711112222",
+      mail: "liuhua123@example.com",
+    },
+    {
+      id: 4,
+      realName: "陈小红",
+      gender: "女",
+      userName: "chenxiaohong",
+      phone: "13633334444",
+      mail: "chenxiaohong@example.com",
+    },
+    {
+      id: 5,
+      realName: "王大力",
+      gender: "男",
+      userName: "dali777",
+      phone: "13555556666",
+      mail: "dali777@example.com",
+    },
+    {
+      id: 6,
+      realName: "赵芳芳",
+      gender: "女",
+      userName: "zhaofangfang",
+      phone: "13499998888",
+      mail: "zhaofangfang@example.com",
+    },
+    {
+      id: 7,
+      realName: "李健",
+      gender: "男",
+      userName: "lijian999",
+      phone: "13877779999",
+      mail: "lijian999@example.com",
+    },
+    {
+      id: 8,
+      realName: "孙娜",
+      gender: "女",
+      userName: "sunnana",
+      phone: "13988887777",
+      mail: "sunnana@example.com",
+    },
+    {
+      id: 9,
+      realName: "周阳",
+      gender: "男",
+      userName: "zhouyang123",
+      phone: "13666665555",
+      mail: "zhouyang123@example.com",
+    },
+    {
+      id: 10,
+      realName: "吴艳",
+      gender: "女",
+      userName: "wuyan666",
+      phone: "13788889999",
+      mail: "wuyan666@example.com",
+    },
+  ]
+);
 //定义响应式数据控制抽屉的显示与隐藏
 let drawer = ref<boolean>(false);
 //控制分配角色抽屉显示与隐藏
@@ -118,10 +207,12 @@ let allRole = ref<AllRole>([]);
 //当前用户已有的职位
 let userRole = ref<AllRole>([]);
 //收集用户信息的响应式数据
-let userParams = reactive<User>({
+let userParams = ref({
   username: '',
-  name: '',
-  password: ''
+  realName: '',
+  gender: '',
+  phone: '',
+  mail: '',
 });
 //准备一个数组存储批量删除的用户的ID
 let selectIdArr = ref<User[]>([]);

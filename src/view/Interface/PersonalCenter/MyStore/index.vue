@@ -8,7 +8,7 @@
                     <el-card class="box-card">
                         <!-- 卡片顶部添加品牌按钮 -->
                         <el-button type="primary" size="default" icon="Plus" @click="addTrademark"
-                            v-has="`btn.Trademark.add`">添加品牌</el-button>
+                            v-has="`btn.Trademark.add`">添加商品</el-button>
                         <!-- 表格组件：用于展示已有得平台数据 -->
                         <!-- table:---border:可以设置表格纵向是否有边框
                 table-column:---label:某一个列表 ---width:设置这列宽度 ---align:设置这一列对齐方式    
@@ -16,12 +16,20 @@
                         <el-table style="margin:10px 0px" border :data="trademarkArr">
                             <el-table-column label="序号" width="80px" align="center" type="index"></el-table-column>
                             <!-- table-column:默认展示数据用div -->
-                            <el-table-column label="品牌名称" prop="tmName">
+                            <el-table-column label="商品名称" prop="productName">
                             </el-table-column>
-                            <el-table-column label="品牌LOGO">
+                            <el-table-column label="商品LOGO">
                                 <template #="{ row, $index }">
-                                    <img :src="row.logoUrl" style="width:100px;height: 100px;">
+                                    <img :src="row.imageUrl" style="width:100px;height: 100px;">
                                 </template>
+                            </el-table-column>
+                            <el-table-column label="商品描述" prop="description">
+                            </el-table-column>
+                            <el-table-column label="商品状态" prop="status">
+                            </el-table-column>
+                            <el-table-column label="商品价格" prop="price">
+                            </el-table-column>
+                            <el-table-column label="商品类型" prop="productType">
                             </el-table-column>
                             <el-table-column label="品牌操作">
                                 <template #="{ row, $index }">
@@ -53,89 +61,26 @@
             v-model:属性用户控制对话框的显示与隐藏的 true显示 false隐藏
              title:设置对话框左上角标题
         -->
-                    <el-dialog v-model="dialogFormVisible" :title="trademarkParams.id ? '修改品牌' : '添加品牌'">
+                    <el-dialog v-model="dialogFormVisible" :title="trademarkParams.id ? '修改商品' : '添加商品'">
                         <el-form style="width: 80%;" :model="trademarkParams" :rules="rules" ref="formRef">
-                            <el-form-item label="品牌名称" label-width="100px" prop="tmName">
-                                <el-input placeholder="请您输入品牌名称" v-model="trademarkParams.tmName"></el-input>
+                            <el-form-item label="商品名称" label-width="100px" prop="productName">
+                                <el-input placeholder="请您输入商品名称" v-model="trademarkParams.productName"></el-input>
                             </el-form-item>
-                            <el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
+                            <el-form-item label="商品描述" label-width="100px" prop="description">
+                                <el-input placeholder="请您输入商品描述" v-model="trademarkParams.description"></el-input>
+                            </el-form-item>
+                            <el-form-item label="商品状态" label-width="100px" prop="status">
+                                <el-input placeholder="请您输入商品状态" v-model="trademarkParams.status"></el-input>
+                            </el-form-item>
+                            <el-form-item label="商品价格" label-width="100px" prop="price">
+                                <el-input placeholder="请您输入商品价格" v-model="trademarkParams.price"></el-input>
+                            </el-form-item>
+                            <el-form-item label="商品类型" label-width="100px" prop="productType">
+                                <el-input placeholder="请您输入商品类型" v-model="trademarkParams.productType"></el-input>
+                            </el-form-item>
+                            <el-form-item label="商品图片" label-width="100px" prop="imageUrl">
                                 <!-- upload组件属性:action图片上传路径书写/api,代理服务器不发送这次post请求  -->
-                                <el-upload class="avatar-uploader" action="/api/admin/product/fileUpload"
-                                    :show-file-list="false" :on-success="handleAvatarSuccess"
-                                    :before-upload="beforeAvatarUpload">
-                                    <img v-if="trademarkParams.logoUrl" :src="trademarkParams.logoUrl" class="avatar" />
-                                    <el-icon v-else class="avatar-uploader-icon">
-                                        <Plus />
-                                    </el-icon>
-                                </el-upload>
-
-                            </el-form-item>
-                        </el-form>
-                        <!-- 具名插槽:footer -->
-                        <template #footer>
-                            <el-button type="primary" size="default" @click="cancel">取消</el-button>
-                            <el-button type="primary" size="default" @click="confirm">确定</el-button>
-                        </template>
-                    </el-dialog>
-                </el-tab-pane>
-                <el-tab-pane label="Orders" name="orders">
-                    <!-- 订单管理 -->
-                    <el-card class="box-card">
-                        <!-- 卡片顶部添加品牌按钮 -->
-                        <el-button type="primary" size="default" icon="Plus" @click="addTrademark"
-                            v-has="`btn.Trademark.add`">添加品牌</el-button>
-                        <!-- 表格组件：用于展示已有得平台数据 -->
-                        <!-- table:---border:可以设置表格纵向是否有边框
-                table-column:---label:某一个列表 ---width:设置这列宽度 ---align:设置这一列对齐方式    
-            -->
-                        <el-table style="margin:10px 0px" border :data="trademarkArr">
-                            <el-table-column label="序号" width="80px" align="center" type="index"></el-table-column>
-                            <!-- table-column:默认展示数据用div -->
-                            <el-table-column label="品牌名称" prop="tmName">
-                            </el-table-column>
-                            <el-table-column label="品牌LOGO">
-                                <template #="{ row, $index }">
-                                    <img :src="row.logoUrl" style="width:100px;height: 100px;">
-                                </template>
-                            </el-table-column>
-                            <el-table-column label="品牌操作">
-                                <template #="{ row, $index }">
-                                    <el-button type="primary" size="small" icon="Edit"
-                                        @click="updateTrademark(row)"></el-button>
-                                    <el-popconfirm :title="`您确定要删除${row.tmName}?`" width="250px" icon="Delete"
-                                        @confirm='removeTradeMark(row.id)'>
-                                        <template #reference>
-                                            <el-button type="primary" size="small" icon="Delete"></el-button>
-                                        </template>
-                                    </el-popconfirm>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <!-- 分页器组件
-                pagination
-                   v-model:current-page:设置分页器当前页码
-                   v-model:page-size:设置每一个展示数据条数
-                   page-sizes:用于设置下拉菜单数据
-                   background:设置分页器按钮的背景颜色
-                   layout:可以设置分页器六个子组件布局调整
-            -->
-                        <el-pagination @size-change="sizeChange" @current-change="getHasTrademark" :pager-count="9"
-                            v-model:current-page="pageNo" v-model:page-size="limit" :page-sizes="[3, 5, 7, 9]"
-                            :background="true" layout="prev, pager, next, jumper,->,sizes,total" :total="total" />
-                    </el-card>
-                    <!-- 对话框组件:在添加品牌与修改已有品牌的业务时候使用结构 -->
-                    <!-- 
-            v-model:属性用户控制对话框的显示与隐藏的 true显示 false隐藏
-             title:设置对话框左上角标题
-        -->
-                    <el-dialog v-model="dialogFormVisible" :title="trademarkParams.id ? '修改品牌' : '添加品牌'">
-                        <el-form style="width: 80%;" :model="trademarkParams" :rules="rules" ref="formRef">
-                            <el-form-item label="品牌名称" label-width="100px" prop="tmName">
-                                <el-input placeholder="请您输入品牌名称" v-model="trademarkParams.tmName"></el-input>
-                            </el-form-item>
-                            <el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
-                                <!-- upload组件属性:action图片上传路径书写/api,代理服务器不发送这次post请求  -->
-                                <el-upload class="avatar-uploader" action="/api/admin/product/fileUpload"
+                                <el-upload class="avatar-uploader" action="/api/commodity-service/UploadImage"
                                     :show-file-list="false" :on-success="handleAvatarSuccess"
                                     :before-upload="beforeAvatarUpload">
                                     <img v-if="trademarkParams.logoUrl" :src="trademarkParams.logoUrl" class="avatar" />
@@ -162,6 +107,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
+import { reqHangOut, reqGetAllProductByUserId } from '@/api/commodity/index'
 const activeTab = ref('products')
 let pageNo = ref<number>(1);
 //每一页展示多少条数据
@@ -169,13 +115,18 @@ let limit = ref<number>(3);
 //存储已有品牌数据总数
 let total = ref<number>(0);
 //存储已有品牌的数据
-let trademarkArr = ref<Records>([]);
+let trademarkArr = ref([]);
 //控制对话框显示与隐藏
 let dialogFormVisible = ref<boolean>(false)
 //定义收集新增品牌数据
-let trademarkParams = reactive<TradeMark>({
-    tmName: '',
-    logoUrl: ''
+let trademarkParams = ref({
+    productName: "Realme GT",
+    description: "256GB，钛矿灰色，外观无划痕，全功能正常，附带原装快充充电器",
+    imageUrl: "",
+    sid: "1798360085697732608",
+    status: "外观无划痕",
+    price: "3500",
+    productType: "手机"
 })
 //获取el-form组件实例
 let formRef = ref();
@@ -183,7 +134,7 @@ let formRef = ref();
 const getHasTrademark = async (pager = 1) => {
     //当前页码
     pageNo.value = pager;
-    let result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value);
+    // let result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value);
     if (result.code == 200) {
         //存储已有品牌总个数
         total.value = result.data.total;
@@ -191,8 +142,13 @@ const getHasTrademark = async (pager = 1) => {
     }
 }
 //组件挂载完毕钩子---发一次请求,获取第一页、一页三个已有品牌数据
-onMounted(() => {
-    getHasTrademark();
+onMounted(async () => {
+    let id = window.localStorage.getItem("userId");
+    console.log(id);
+    const res = await reqGetAllProductByUserId(id);
+    console.log(res);
+    trademarkArr.value = res.data.products
+
 });
 //分页器当前页码发生变化的时候会触发
 //对于当前页码发生变化自定义事件,组件pagination父组件回传了数据(当前的页码)
@@ -241,32 +197,46 @@ const cancel = () => {
     //对话框隐藏
     dialogFormVisible.value = false;
 }
-const confirm = async () => {
-    //在你发请求之前,要对于整个表单进行校验
-    //调用这个方法进行全部表单相校验,如果校验全部通过，在执行后面的语法
-    await formRef.value.validate();
-    let result: any = await reqAddOrUpdateTrademark(trademarkParams);
-    //添加|修改已有品牌
-    if (result.code == 200) {
-        //关闭对话框
-        dialogFormVisible.value = false;
-        //弹出提示信息
-        ElMessage({
-            type: 'success',
-            message: trademarkParams.id ? '修改品牌成功' : '添加品牌成功'
-        });
-        //再次发请求获取已有全部的品牌数据
-        getHasTrademark(trademarkParams.id ? pageNo.value : 1);
-    } else {
-        //添加品牌失败
-        ElMessage({
-            type: 'error',
-            message: trademarkParams.id ? '修改品牌失败' : '添加品牌失败'
-        });
-        //关闭对话框
-        dialogFormVisible.value = false;
-    }
+const confirm = () => {
+    formRef.value.validate(async (valid: any) => {
+        if (valid) {
+            console.log(trademarkParams.value);
+            const res = await reqHangOut(trademarkParams.value)
+            console.log(res);
+        }
+    })
 }
+// const confirm = async () => {
+//     //在你发请求之前,要对于整个表单进行校验
+//     //调用这个方法进行全部表单相校验,如果校验全部通过，在执行后面的语法
+//     await formRef.value.validate();
+//     console.log(trademarkParams.value);
+
+//     const res = await reqHangOut(trademarkParams.value);
+//     // console.log(res);
+
+//     // let result: any = await reqAddOrUpdateTrademark(trademarkParams);
+//     //添加|修改已有品牌
+//     if (result.code == 0) {
+//         //关闭对话框
+//         dialogFormVisible.value = false;
+//         //弹出提示信息
+//         ElMessage({
+//             type: 'success',
+//             message: trademarkParams.id ? '修改商品成功' : '添加商品成功'
+//         });
+//         //再次发请求获取已有全部的品牌数据
+//         getHasTrademark(trademarkParams.id ? pageNo.value : 1);
+//     } else {
+//         //添加品牌失败
+//         ElMessage({
+//             type: 'error',
+//             message: trademarkParams.id ? '修改商品失败' : '添加商品失败'
+//         });
+//         //关闭对话框
+//         dialogFormVisible.value = false;
+//     }
+// }
 //上传图片组件->上传图片之前触发的钩子函数
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
     //钩子是在图片上传成功之前触发,上传文件之前可以约束文件类型与大小
@@ -310,26 +280,34 @@ const validatorTmName = (rule: any, value: any, callBack: any) => {
         callBack(new Error('品牌名称位数大于等于两位'))
     }
 }
-//品牌LOGO图片的自定义校验规则方法
-const validatorLogoUrl = (rule: any, value: any, callBack: any) => {
-    //如果图片上传
-    if (value) {
-        callBack();
-    } else {
-        callBack(new Error('LOGO图片务必上传'))
-    }
-}
 
 //表单校验规则对象
 const rules = {
-    tmName: [
+    productName: [
         //required:这个字段务必校验,表单项前面出来五角星
         //trigger:代表触发校验规则时机[blur、change]
-        { required: true, trigger: 'blur', validator: validatorTmName }
+        { required: true, trigger: 'blur', message: "请输入商品名称" }
     ],
-    logoUrl: [
-        { required: true, validator: validatorLogoUrl }
-    ]
+    description: [
+        //required:这个字段务必校验,表单项前面出来五角星
+        //trigger:代表触发校验规则时机[blur、change]
+        { required: true, trigger: 'blur', message: "请输入商品描述" }
+    ],
+    price: [
+        //required:这个字段务必校验,表单项前面出来五角星
+        //trigger:代表触发校验规则时机[blur、change]
+        { required: true, trigger: 'blur', message: "请输入商品价格" }
+    ],
+    status: [
+        //required:这个字段务必校验,表单项前面出来五角星
+        //trigger:代表触发校验规则时机[blur、change]
+        { required: true, trigger: 'blur', message: "请输入商品状态" }
+    ],
+    productType: [
+        //required:这个字段务必校验,表单项前面出来五角星
+        //trigger:代表触发校验规则时机[blur、change]
+        { required: true, trigger: 'blur', message: "请输入商品类型" }
+    ],
 }
 //气泡确认框确定按钮的回调
 const removeTradeMark = async (id: number) => {

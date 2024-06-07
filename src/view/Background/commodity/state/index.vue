@@ -1,349 +1,376 @@
 <template>
-  <el-card style="height: 80px;">
-    <el-form :inline="true" class="form">
-      <el-form-item label="用户名:">
-        <el-input placeholder="请你输入搜索卖家的用户名" v-model="keyword"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" size="default" :disabled="keyword ? false : true" @click="search">搜索</el-button>
-        <el-button type="primary" size="default" @click="reset">重置</el-button>
-      </el-form-item>
-    </el-form>
-  </el-card>
-  <el-card style="margin: 10px 0px;">
-    <el-button type="primary" size="default" @click="addUser">添加用户</el-button>
-    <el-button type="primary" size="default" :disabled="selectIdArr.length ? false : true"
-      @click="deleteSelectUser">批量删除</el-button>
-    <!-- table展示用户信息 -->
-    <el-table @selection-change="selectChange" style="margin: 10px 0px;" border :data="userArr">
-      <el-table-column type="selection" align="center"></el-table-column>
-      <el-table-column label="#" align="center" type="index"></el-table-column>
-      <el-table-column label="ID" align="center" prop="id"></el-table-column>
-      <el-table-column label="用户名字" align="center" prop="username" show-overflow-tooltip></el-table-column>
-      <el-table-column label="用户名称" align="center" prop="name" show-overflow-tooltip></el-table-column>
-      <el-table-column label="用户角色" align="center" prop="roleName" show-overflow-tooltip></el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" show-overflow-tooltip></el-table-column>
-      <el-table-column label="更新时间" align="center" prop="updateTime" show-overflow-tooltip></el-table-column>
-      <el-table-column label="操作" width="300px" align="center">
-        <template #="{ row, $index }">
-          <el-button type="primary" size="small" icon="User" @click="setRole(row)">分配角色</el-button>
-          <el-button type="primary" size="small" icon="Edit" @click="updateUser(row)">编辑</el-button>
-          <el-popconfirm :title="`你确定要删除${row.username}?`" width="260px" @confirm="deleteUser(row.id)">
-            <template #reference>
-              <el-button type="primary" size="small" icon="Delete">删除</el-button>
+  <div class="my-store">
+    <!-- 店铺管理功能 -->
+    <div class="store-management">
+      <!-- 商品管理 -->
+      <el-card class="box-card">
+        <!-- 卡片顶部添加品牌按钮 -->
+        <el-button type="primary" size="default" icon="Plus" @click="addTrademark"
+          v-has="`btn.Trademark.add`">添加商品</el-button>
+        <!-- 表格组件：用于展示已有得平台数据 -->
+        <!-- table:---border:可以设置表格纵向是否有边框
+                table-column:---label:某一个列表 ---width:设置这列宽度 ---align:设置这一列对齐方式    
+            -->
+        <el-table style="margin:10px 0px" border :data="trademarkArr">
+          <el-table-column label="序号" width="80px" align="center" type="index"></el-table-column>
+          <!-- table-column:默认展示数据用div -->
+          <el-table-column label="商品名称" prop="productName">
+          </el-table-column>
+          <el-table-column label="商品LOGO">
+            <template #="{ row, $index }">
+              <img :src="row.imageUrl" style="width:100px;height: 100px;">
             </template>
-          </el-popconfirm>
+          </el-table-column>
+          <el-table-column label="商品描述" prop="description">
+          </el-table-column>
+          <el-table-column label="商品状态" prop="status">
+          </el-table-column>
+          <el-table-column label="商品价格" prop="price">
+          </el-table-column>
+          <el-table-column label="商品类型" prop="productType">
+          </el-table-column>
+          <el-table-column label="品牌操作">
+            <template #="{ row, $index }">
+              <el-button type="primary" size="small" icon="Edit" @click="updateTrademark(row)"></el-button>
+              <el-popconfirm :title="`您确定要删除${row.tmName}?`" width="250px" icon="Delete"
+                @confirm='removeTradeMark(row.id)'>
+                <template #reference>
+                  <el-button type="primary" size="small" icon="Delete"></el-button>
+                </template>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页器组件
+                pagination
+                   v-model:current-page:设置分页器当前页码
+                   v-model:page-size:设置每一个展示数据条数
+                   page-sizes:用于设置下拉菜单数据
+                   background:设置分页器按钮的背景颜色
+                   layout:可以设置分页器六个子组件布局调整
+            -->
+        <el-pagination @size-change="sizeChange" @current-change="getHasTrademark" :pager-count="9"
+          v-model:current-page="pageNo" v-model:page-size="limit" :page-sizes="[3, 5, 7, 9]" :background="true"
+          layout="prev, pager, next, jumper,->,sizes,total" :total="total" />
+      </el-card>
+      <!-- 对话框组件:在添加品牌与修改已有品牌的业务时候使用结构 -->
+      <!-- 
+            v-model:属性用户控制对话框的显示与隐藏的 true显示 false隐藏
+             title:设置对话框左上角标题
+        -->
+      <el-dialog v-model="dialogFormVisible" :title="trademarkParams.id ? '修改商品' : '添加商品'">
+        <el-form style="width: 80%;" :model="trademarkParams" :rules="rules" ref="formRef">
+          <el-form-item label="商品名称" label-width="100px" prop="productName">
+            <el-input placeholder="请您输入商品名称" v-model="trademarkParams.productName"></el-input>
+          </el-form-item>
+          <el-form-item label="商品描述" label-width="100px" prop="description">
+            <el-input placeholder="请您输入商品描述" v-model="trademarkParams.description"></el-input>
+          </el-form-item>
+          <el-form-item label="商品状态" label-width="100px" prop="status">
+            <el-input placeholder="请您输入商品状态" v-model="trademarkParams.status"></el-input>
+          </el-form-item>
+          <el-form-item label="商品价格" label-width="100px" prop="price">
+            <el-input placeholder="请您输入商品价格" v-model="trademarkParams.price"></el-input>
+          </el-form-item>
+          <el-form-item label="商品类型" label-width="100px" prop="productType">
+            <el-input placeholder="请您输入商品类型" v-model="trademarkParams.productType"></el-input>
+          </el-form-item>
+          <el-form-item label="商品图片" label-width="100px" prop="imageUrl">
+            <!-- upload组件属性:action图片上传路径书写/api,代理服务器不发送这次post请求  -->
+            <el-upload class="avatar-uploader" action="/api/commodity-service/UploadImage" :show-file-list="false"
+              :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+              <img v-if="trademarkParams.logoUrl" :src="trademarkParams.logoUrl" class="avatar" />
+              <el-icon v-else class="avatar-uploader-icon">
+                <Plus />
+              </el-icon>
+            </el-upload>
+
+          </el-form-item>
+        </el-form>
+        <!-- 具名插槽:footer -->
+        <template #footer>
+          <el-button type="primary" size="default" @click="cancel">取消</el-button>
+          <el-button type="primary" size="default" @click="confirm">确定</el-button>
         </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页器 -->
-    <el-pagination v-model:current-page="pageNo" v-model:page-size="pageSize" :page-sizes="[5, 7, 9, 11]"
-      :background="true" layout="prev, pager, next, jumper,->,sizes,total" :total="total" @current-change="getHasUser"
-      @size-change="handler" />
-  </el-card>
-  <!-- 抽屉结构:完成添加新的用户账号|更新已有的账号信息 -->
-  <el-drawer v-model="drawer">
-    <!-- 头部标题:将来文字内容应该动态的 -->
-    <template #header>
-      <h4>{{ userParams.id ? '更新用户' : '添加用户' }}</h4>
-    </template>
-    <!-- 身体部分 -->
-    <template #default>
-      <el-form :model="userParams" :rules="rules" ref="formRef">
-        <el-form-item label="用户姓名" prop="username">
-          <el-input placeholder="请您输入用户姓名" v-model="userParams.username"></el-input>
-        </el-form-item>
-        <el-form-item label="用户昵称" prop="name">
-          <el-input placeholder="请您输入用户昵称" v-model="userParams.name"></el-input>
-        </el-form-item>
-        <el-form-item label="用户密码" prop="password" v-if="!userParams.id">
-          <el-input placeholder="请您输入用户密码" v-model="userParams.password"></el-input>
-        </el-form-item>
-      </el-form>
-    </template>
-    <template #footer>
-      <div style="flex: auto">
-        <el-button @click="cancel">取消</el-button>
-        <el-button type="primary" @click="save">确定</el-button>
-      </div>
-    </template>
-  </el-drawer>
-  <!-- 抽屉结构:用户某一个已有的账号进行职位分配 -->
-  <el-drawer v-model="drawer1">
-    <template #header>
-      <h4>分配角色(职位)</h4>
-    </template>
-    <template #default>
-      <el-form>
-        <el-form-item label="用户姓名">
-          <el-input v-model="userParams.username" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="职位列表">
-          <el-checkbox @change="handleCheckAllChange" v-model="checkAll"
-            :indeterminate="isIndeterminate">全选</el-checkbox>
-          <!-- 显示职位的的复选框 -->
-          <el-checkbox-group v-model="userRole" @change="handleCheckedCitiesChange">
-            <el-checkbox v-for="(role, index) in allRole" :key="index" :label="role">{{ role.roleName
-              }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
-    </template>
-    <template #footer>
-      <div style="flex: auto">
-        <el-button @click="drawer1 = false">取消</el-button>
-        <el-button type="primary" @click="confirmClick">确定</el-button>
-      </div>
-    </template>
-  </el-drawer>
+      </el-dialog>
+      <!-- 其他功能选项卡 -->
+      <!-- ... -->
+    </div>
+  </div>
 </template>
+
 <script setup lang="ts">
-import useLayOutSettingStore from '@/store/modules/setting'
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { ElMessage } from 'element-plus';
-//默认页码
+import { reqHangOut, reqGetAllProductByUserId } from '@/api/commodity/index'
+const activeTab = ref('products')
 let pageNo = ref<number>(1);
-//一页展示几条数据
-let pageSize = ref<number>(5);
-//用户总个数
+//每一页展示多少条数据
+let limit = ref<number>(3);
+//存储已有品牌数据总数
 let total = ref<number>(0);
-//存储全部用户的数组
-let userArr = ref<Records>([]);
-//定义响应式数据控制抽屉的显示与隐藏
-let drawer = ref<boolean>(false);
-//控制分配角色抽屉显示与隐藏
-let drawer1 = ref<boolean>(false);
-//存储全部职位的数据
-let allRole = ref<AllRole>([]);
-//当前用户已有的职位
-let userRole = ref<AllRole>([]);
-//收集用户信息的响应式数据
-let userParams = reactive<User>({
-  username: '',
-  name: '',
-  password: ''
-});
-//准备一个数组存储批量删除的用户的ID
-let selectIdArr = ref<User[]>([]);
-//获取form组件实例
-let formRef = ref<any>();
-//定义响应式数据:收集用户输入进来的关键字
-let keyword = ref<string>('');
-//获取模板setting仓库
-let settingStore = useLayOutSettingStore();
-//组件挂载完毕
-onMounted(() => {
-  getHasUser();
-});
-//获取全部已有的用户信息
-const getHasUser = async (pager = 1) => {
-  //收集当前页码
+//存储已有品牌的数据
+let trademarkArr = ref([]);
+//控制对话框显示与隐藏
+let dialogFormVisible = ref<boolean>(false)
+//定义收集新增品牌数据
+let trademarkParams = ref({
+  productName: "Realme GT",
+  description: "256GB，钛矿灰色，外观无划痕，全功能正常，附带原装快充充电器",
+  imageUrl: "",
+  sid: "1798360085697732608",
+  status: "外观无划痕",
+  price: "3500",
+  productType: "手机"
+})
+//获取el-form组件实例
+let formRef = ref();
+//获取已有品牌的接口封装为一个函数:在任何情况下向获取数据,调用次函数即可
+const getHasTrademark = async (pager = 1) => {
+  //当前页码
   pageNo.value = pager;
-  let result: UserResponseData = await reqUserInfo(pageNo.value, pageSize.value, keyword.value);
+  // let result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value);
   if (result.code == 200) {
+    //存储已有品牌总个数
     total.value = result.data.total;
-    userArr.value = result.data.records;
+    trademarkArr.value = result.data.records;
   }
 }
-//分页器下拉菜单的自定义事件的回调
-const handler = () => {
-  getHasUser();
+//组件挂载完毕钩子---发一次请求,获取第一页、一页三个已有品牌数据
+onMounted(async () => {
+  let id = window.localStorage.getItem("userId");
+  console.log(id);
+  const res = await reqGetAllProductByUserId(id);
+  console.log(res);
+  trademarkArr.value = res.data.products
+
+});
+//分页器当前页码发生变化的时候会触发
+//对于当前页码发生变化自定义事件,组件pagination父组件回传了数据(当前的页码)
+// const changePageNo = ()=>{
+//     //当前页码发生变化的时候再次发请求获取对应已有品牌数据展示
+//     getHasTrademark();
+// }
+
+//当下拉菜单发生变化的时候触发次方法
+//这个自定义事件,分页器组件会将下拉菜单选中数据返回
+const sizeChange = () => {
+  //当前每一页的数据量发生变化的时候，当前页码归1
+  getHasTrademark();
 }
-//添加用户按钮的回调
-const addUser = () => {
-  //抽屉显示出来
-  drawer.value = true;
-  //清空数据
-  Object.assign(userParams, {
-    id: 0,
-    username: '',
-    name: '',
-    password: ''
-  });
-  //清除上一次的错误的提示信息
+//添加品牌按钮的回调
+const addTrademark = () => {
+  //对话框显示
+  dialogFormVisible.value = true;
+  //清空收集数据
+  trademarkParams.id = 0;
+  trademarkParams.tmName = '';
+  trademarkParams.logoUrl = '';
+  //第一种写法:ts的问号语法
+  // formRef.value?.clearValidate('tmName');
+  // formRef.value?.clearValidate('logoUrl');
   nextTick(() => {
-    formRef.value.clearValidate('username');
-    formRef.value.clearValidate('name');
-    formRef.value.clearValidate('password');
-  });
+    formRef.value.clearValidate('tmName');
+    formRef.value.clearValidate('logoUrl');
+  })
 }
-//更新已有的用户按钮的回调
-//row:即为已有用户的账号信息
-const updateUser = (row: User) => {
-  //抽屉显示出来
-  drawer.value = true;
-  //存储收集已有的账号信息
-  Object.assign(userParams, row);
-  //清除上一次的错误的提示信息
+//修改已有品牌的按钮的回调
+//row:row即为当前已有的品牌
+const updateTrademark = (row: TradeMark) => {
+  //清空校验规则错误提示信息
   nextTick(() => {
-    formRef.value.clearValidate('username');
-    formRef.value.clearValidate('name');
-  });
+    formRef.value.clearValidate('tmName');
+    formRef.value.clearValidate('logoUrl');
+  })
+  //对话框显示
+  dialogFormVisible.value = true;
+  //ES6语法合并对象
+  Object.assign(trademarkParams, row);
 }
-//保存按钮的回调
-const save = async () => {
-  //点击保存按钮的时候,务必需要保证表单全部复合条件在去发请求
-  await formRef.value.validate()
-  //保存按钮:添加新的用户|更新已有的用户账号信息
-  let result: any = await reqAddOrUpdateUser(userParams);
-  //添加或者更新成功
-  if (result.code == 200) {
-    //关闭抽屉
-    drawer.value = false;
-    //提示消息
-    ElMessage({ type: 'success', message: userParams.id ? '更新成功' : '添加成功' });
-    //获取最新的全部账号的信息
-    // getHasUser(userParams.id ? pageNo.value : 1);
-    //浏览器自动刷新一次
-    window.location.reload();
-  } else {
-    //关闭抽屉
-    drawer.value = false;
-    //提示消息
-    ElMessage({ type: 'error', message: userParams.id ? '更新失败' : '添加失败' });
-  }
-}
-//取消按钮的回调
+//对话框底部取消按钮
 const cancel = () => {
-  //关闭抽屉
-  drawer.value = false;
+  //对话框隐藏
+  dialogFormVisible.value = false;
 }
-//校验用户名字回调函数
-const validatorUsername = (rule: any, value: any, callBack: any) => {
-  //用户名字|昵称,长度至少五位
-  if (value.trim().length >= 5) {
-    callBack();
+const confirm = () => {
+  formRef.value.validate(async (valid: any) => {
+    if (valid) {
+      console.log(trademarkParams.value);
+      const res = await reqHangOut(trademarkParams.value)
+      console.log(res);
+    }
+  })
+}
+// const confirm = async () => {
+//     //在你发请求之前,要对于整个表单进行校验
+//     //调用这个方法进行全部表单相校验,如果校验全部通过，在执行后面的语法
+//     await formRef.value.validate();
+//     console.log(trademarkParams.value);
+
+//     const res = await reqHangOut(trademarkParams.value);
+//     // console.log(res);
+
+//     // let result: any = await reqAddOrUpdateTrademark(trademarkParams);
+//     //添加|修改已有品牌
+//     if (result.code == 0) {
+//         //关闭对话框
+//         dialogFormVisible.value = false;
+//         //弹出提示信息
+//         ElMessage({
+//             type: 'success',
+//             message: trademarkParams.id ? '修改商品成功' : '添加商品成功'
+//         });
+//         //再次发请求获取已有全部的品牌数据
+//         getHasTrademark(trademarkParams.id ? pageNo.value : 1);
+//     } else {
+//         //添加品牌失败
+//         ElMessage({
+//             type: 'error',
+//             message: trademarkParams.id ? '修改商品失败' : '添加商品失败'
+//         });
+//         //关闭对话框
+//         dialogFormVisible.value = false;
+//     }
+// }
+//上传图片组件->上传图片之前触发的钩子函数
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  //钩子是在图片上传成功之前触发,上传文件之前可以约束文件类型与大小
+  //要求:上传文件格式png|jpg|gif 4M
+  if (rawFile.type == 'image/png' || rawFile.type == 'image/jpeg' || rawFile.type == 'image/gif') {
+    if (rawFile.size / 1024 / 1024 < 4) {
+      return true;
+    } else {
+      ElMessage({
+        type: 'error',
+        message: '上传文件大小小于4M'
+      })
+      return false;
+    }
   } else {
-    callBack(new Error('用户名字至少五位'))
+    ElMessage({
+      type: 'error',
+      message: "上传文件格式务必PNG|JPG|GIF"
+    })
+    return false;
   }
 }
-//校验用户名字回调函数
-const validatorname = (rule: any, value: any, callBack: any) => {
-  //用户名字|昵称,长度至少五位
-  if (value.trim().length >= 5) {
+//图片上传成功钩子
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+  //response:即为当前这次上传图片post请求服务器返回的数据
+  //收集上传图片的地址,添加一个新的品牌的时候带给服务器
+  trademarkParams.logoUrl = response.data;
+  //图片上传成功,清除掉对应图片校验结果
+  formRef.value.clearValidate('logoUrl');
+
+}
+
+//品牌自定义校验规则方法
+const validatorTmName = (rule: any, value: any, callBack: any) => {
+  //是当表单元素触发blur时候,会触发此方法
+  //自定义校验规则
+  if (value.trim().length >= 2) {
     callBack();
   } else {
-    callBack(new Error('用户昵称至少五位'))
+    //校验未通过返回的错误的提示信息
+    callBack(new Error('品牌名称位数大于等于两位'))
   }
 }
-const validatorPassword = (rule: any, value: any, callBack: any) => {
-  //用户名字|昵称,长度至少五位
-  if (value.trim().length >= 6) {
-    callBack();
-  } else {
-    callBack(new Error('用户密码至少六位'))
-  }
-}
-//表单校验的规则对象
+
+//表单校验规则对象
 const rules = {
-  //用户名字
-  username: [{ required: true, trigger: 'blur', validator: validatorUsername }],
-  //用户昵称
-  name: [{ required: true, trigger: 'blur', validator: validatorname }],
-  //用户的密码
-  password: [{ required: true, trigger: 'blur', validator: validatorPassword }],
+  productName: [
+    //required:这个字段务必校验,表单项前面出来五角星
+    //trigger:代表触发校验规则时机[blur、change]
+    { required: true, trigger: 'blur', message: "请输入商品名称" }
+  ],
+  description: [
+    //required:这个字段务必校验,表单项前面出来五角星
+    //trigger:代表触发校验规则时机[blur、change]
+    { required: true, trigger: 'blur', message: "请输入商品描述" }
+  ],
+  price: [
+    //required:这个字段务必校验,表单项前面出来五角星
+    //trigger:代表触发校验规则时机[blur、change]
+    { required: true, trigger: 'blur', message: "请输入商品价格" }
+  ],
+  status: [
+    //required:这个字段务必校验,表单项前面出来五角星
+    //trigger:代表触发校验规则时机[blur、change]
+    { required: true, trigger: 'blur', message: "请输入商品状态" }
+  ],
+  productType: [
+    //required:这个字段务必校验,表单项前面出来五角星
+    //trigger:代表触发校验规则时机[blur、change]
+    { required: true, trigger: 'blur', message: "请输入商品类型" }
+  ],
 }
-//分配角色按钮的回调
-const setRole = async (row: User) => {
-  //存储已有的用户信息
-  Object.assign(userParams, row);
-  //获取全部的职位的数据与当前用户已有的职位的数据
-  let result: AllRoleResponseData = await reqAllRole((userParams.id as number));
+//气泡确认框确定按钮的回调
+const removeTradeMark = async (id: number) => {
+  //点击确定按钮删除已有品牌请求
+  let result = await reqDeleteTrademark(id);
   if (result.code == 200) {
-    //存储全部的职位
-    allRole.value = result.data.allRolesList;
-    //存储当前用户已有的职位
-    userRole.value = result.data.assignRoles;
-    //抽屉显示出来
-    drawer1.value = true;
-  }
-
-}
-
-//收集顶部复选框全选数据
-const checkAll = ref<boolean>(false);
-//控制顶部全选复选框不确定的样式
-const isIndeterminate = ref<boolean>(true);
-//顶部的全部复选框的change事件
-const handleCheckAllChange = (val: boolean) => {
-  //val:true(全选)|false(没有全选)
-  userRole.value = val ? allRole.value : [];
-  //不确定的样式(确定样式)
-  isIndeterminate.value = false
-}
-//顶部全部的复选框的change事件
-const handleCheckedCitiesChange = (value: string[]) => {
-  //顶部复选框的勾选数据
-  //代表:勾选上的项目个数与全部的职位个数相等，顶部的复选框勾选上
-  checkAll.value = value.length === allRole.value.length;
-  //不确定的样式
-  isIndeterminate.value = value.length !== allRole.value.length
-}
-//确定按钮的回调(分配职位)
-const confirmClick = async () => {
-  //收集参数
-  let data: SetRoleData = {
-    userId: (userParams.id as number),
-    roleIdList: userRole.value.map(item => {
-      return (item.id as number)
+    //删除成功提示信息
+    ElMessage({
+      type: 'success',
+      message: '删除品牌成功'
+    });
+    //再次获取已有的品牌数据
+    getHasTrademark(trademarkArr.value.length > 1 ? pageNo.value : pageNo.value - 1);
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '删除品牌失败'
     })
   }
-  //分配用户的职位
-  let result: any = await reqSetUserRole(data);
-  if (result.code == 200) {
-    //提示信息
-    ElMessage({ type: 'success', message: '分配职务成功' });
-    //关闭抽屉
-    drawer1.value = false;
-    //获取更新完毕用户的信息,更新完毕留在当前页
-    getHasUser(pageNo.value);
+}
+const store = ref({
+  name: 'My Store',
+  logo: 'store_logo.png',
+  description: 'Welcome to My Store!',
+  contact: 'example@store.com'
+})
+const Commodity = ref([
+  { id: 1, name: 'Product 1', price: 10, stock: 100 },
+  { id: 2, name: 'Product 2', price: 20, stock: 50 },
+  // more products...
+])
+const orders = ref([
+  { orderId: 1, status: 'Pending' },
+  { orderId: 2, status: 'Shipped' },
+  // more orders...
+])
+const addCommodity = () => {
 
-  }
 }
+const editProduct = (product) => {
 
-//删除某一个用户
-const deleteUser = async (userId: number) => {
-  let result: any = await reqRemoveUser(userId);
-  if (result.code == 200) {
-    ElMessage({ type: 'success', message: '删除成功' });
-    getHasUser(userArr.value.length > 1 ? pageNo.value : pageNo.value - 1);
-  }
 }
-//table复选框勾选的时候会触发的事件
-const selectChange = (value: any) => {
-  selectIdArr.value = value;
-}
-//批量删除按钮的回调
-const deleteSelectUser = async () => {
-  //整理批量删除的参数
-  let idsList: any = selectIdArr.value.map(item => {
-    return item.id;
-  });
-  //批量删除的请求
-  let result: any = await reqSelectUser(idsList);
-  if (result.code == 200) {
-    ElMessage({ type: 'success', message: '删除成功' });
-    getHasUser(userArr.value.length > 1 ? pageNo.value : pageNo.value - 1);
-  }
-}
+const deleteProduct = (product) => {
 
-//搜索按钮的回调
-const search = () => {
-  //根据关键字获取相应的用户数据
-  getHasUser();
-  //清空关键字
-  keyword.value = '';
 }
-//重置按钮
-const reset = () => {
-  settingStore.refsh = !settingStore.refsh;
+const viewOrderDetails = (order) => {
+
 }
 </script>
 
-<style scoped>
-.form {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+<style scoped lang="scss">
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
 }
 </style>

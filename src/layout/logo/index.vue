@@ -8,7 +8,6 @@
 <script setup lang="ts">
 //引入设置标题与logo这配置文件
 import setting from '@/setting';
-console.log(setting.title);
 
 </script>
 <script lang="ts">
